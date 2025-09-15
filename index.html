@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Counter - BCT Tools Hub</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #4f46e5; --primary-dark: #4338ca; --primary-light: #c7d2fe;
+            --secondary: #10b981;
+            --text-color: #111827; --text-muted: #6b7280;
+            --bg-color: #f7f8fc; --surface-color: #ffffff;
+            --border-color: #e5e7eb; --radius: 16px;
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Inter', 'Hind Siliguri', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container { max-width: 900px; margin: 20px auto; padding: 0 20px; width: 100%; flex-grow: 1; }
+        
+        /* Header */
+        .main-header { background: rgba(255, 255, 255, 0.8); padding: 15px 0; border-bottom: 1px solid var(--border-color); }
+        .header-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; }
+        .logo { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-color); }
+        .logo img { height: 45px; }
+        .logo-text { font-size: 1.3rem; font-weight: 800; }
+        .logo-text span { color: var(--primary); }
+
+        /* Page Header */
+        .page-header { text-align: center; padding: 30px 0; }
+        .page-header h1 { font-size: 2.8rem; font-weight: 800; }
+        .page-header p { font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin: 10px auto 0 auto;}
+
+        /* Word Counter Styles */
+        .counter-wrapper {
+            background: var(--surface-color); padding: 30px; border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+        }
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .result-item {
+            background-color: var(--bg-color);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        .result-item .label {
+            font-weight: 600;
+            color: var(--text-muted);
+            display: block;
+            font-size: 0.9rem;
+        }
+        .result-item .value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+        
+        .toolbox textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-family: inherit;
+            resize: vertical;
+        }
+        .toolbox textarea:focus {
+             outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        .toolbox-actions {
+            margin-top: 15px;
+            text-align: right;
+        }
+        .clear-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .clear-btn:hover { background: #dc2626; }
+        
+        /* Footer */
+        .main-footer { background: var(--text-color); color: #a0aec0; padding: 40px 0 20px 0; margin-top: 50px; }
+        .footer-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; text-align: center; }
+        .footer-about .logo { margin-bottom: 20px; color: white; display: inline-flex; }
+        .footer-about p { max-width: 400px; margin: 0 auto 20px auto; }
+        .footer-bottom { border-top: 1px solid #4a5568; padding-top: 25px; font-size: 0.95rem; }
+        .footer-bottom a { color: var(--primary-light); text-decoration: none; font-weight: 600; }
+        .footer-bottom a:hover { text-decoration: underline; }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .page-header h1 { font-size: 2.2rem; }
+            .counter-wrapper { padding: 20px; }
+            .results-grid { grid-template-columns: 1fr 1fr; }
+            .result-item .value { font-size: 1.5rem; }
+            .toolbox textarea { min-height: 250px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <a href="#" class="logo">
+                <img src="https://i.ibb.co/MyZXHdHf/app-icon.png" alt="BCT TOOLS HUB Logo">
+                <div class="logo-text">BCT<span> TOOLS HUB</span></div>
+            </a>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <div class="page-header">
+                <h1>Word Counter</h1>
+                <p>Keep track of your word count and writing progress. Paste the text inside the toolbox to see the stats.</p>
+            </div>
+            <div class="counter-wrapper">
+                <div class="results-grid">
+                    <div class="result-item">
+                        <span class="label">Words</span>
+                        <span id="words-count" class="value">0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">Characters</span>
+                        <span id="chars-count" class="value">0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">Sentences</span>
+                        <span id="sentences-count" class="value">0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">Paragraphs</span>
+                        <span id="paragraphs-count" class="value">0</span>
+                    </div>
+                </div>
+                <div class="toolbox">
+                    <textarea id="text-input" placeholder="Paste your text here..."></textarea>
+                    <div class="toolbox-actions">
+                        <button id="clear-btn" class="clear-btn">Clear</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-about">
+                <a href="#" class="logo">
+                    <img src="https://i.ibb.co/MyZXHdHf/app-icon.png" alt="BCT TOOLS HUB Logo">
+                    <div class="logo-text">BCT<span> TOOLS HUB</span></div>
+                </a>
+                <p> BCT TOOLS HUB হলো Bangladesh Cyber Troops-এর একটি উদ্যোগ, যার লক্ষ্য প্রয়োজনীয় ডিজিটাল টুলস সবার জন্য সহজলভ্য করা। </p>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 BCT TOOLS HUB | Developed By <a href="https://contac.kelvinasford.netlify.app" target="_blank">Kelvin Ashford</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const textInput = document.getElementById('text-input');
+        const clearBtn = document.getElementById('clear-btn');
+
+        const wordsCountEl = document.getElementById('words-count');
+        const charsCountEl = document.getElementById('chars-count');
+        const sentencesCountEl = document.getElementById('sentences-count');
+        const paragraphsCountEl = document.getElementById('paragraphs-count');
+
+        function updateCounts() {
+            const text = textInput.value;
+
+            // 1. Character Count
+            const charCount = text.length;
+            charsCountEl.textContent = charCount;
+
+            // 2. Word Count
+            const words = text.trim().split(/\s+/).filter(word => word.length > 0);
+            const wordCount = words.length;
+            wordsCountEl.textContent = wordCount;
+
+            // 3. Sentence Count
+            // Matches sentences ending with . ! ? followed by a space or end of string.
+            const sentences = text.match(/[^.!?]+[.!?]+(\s|$)/g);
+            const sentenceCount = sentences ? sentences.length : 0;
+            sentencesCountEl.textContent = sentenceCount;
+
+            // 4. Paragraph Count
+            // Splits by one or more newlines and filters out empty lines.
+            const paragraphs = text.split(/\n+/).filter(p => p.trim().length > 0);
+            const paragraphCount = paragraphs.length;
+            paragraphsCountEl.textContent = paragraphCount;
+        }
+
+        function clearAll() {
+            textInput.value = '';
+            updateCounts();
+        }
+
+        // Update counts in real-time as user types
+        textInput.addEventListener('input', updateCounts);
+        
+        // Clear button functionality
+        clearBtn.addEventListener('click', clearAll);
+    });
+    </script>
+</body>
+</html>
